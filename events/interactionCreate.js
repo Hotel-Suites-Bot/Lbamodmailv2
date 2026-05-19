@@ -1,39 +1,78 @@
-module.exports = (client) => {
+module.exports=(client)=>{
 
-client.on("interactionCreate", async interaction => {
+client.on(
+"interactionCreate",
+async interaction=>{
 
-if (!interaction.isChatInputCommand()) return;
+if(
+!interaction.isButton()
+)return;
 
-const command =
-client.commands.get(
-interaction.commandName
-);
 
-if (!command) return;
+if(
+interaction.customId
+==="cfg_categories"
+){
 
-try{
+return interaction.reply({
 
-await command.execute(interaction);
+content:
+"Category system next",
 
-}catch(err){
-
-console.log(err);
-
-if(interaction.replied){
-
-interaction.followUp({
-content:"Command error",
 ephemeral:true
-});
 
-}else{
-
-interaction.reply({
-content:"Command error",
-ephemeral:true
 });
 
 }
+
+
+if(
+interaction.customId
+==="cfg_roles"
+){
+
+return interaction.reply({
+
+content:
+"Support role system next",
+
+ephemeral:true
+
+});
+
+}
+
+
+if(
+interaction.customId
+==="cfg_channels"
+){
+
+return interaction.reply({
+
+content:
+"Channel config next",
+
+ephemeral:true
+
+});
+
+}
+
+
+if(
+interaction.customId
+==="cfg_settings"
+){
+
+return interaction.reply({
+
+content:
+"Ticket settings next",
+
+ephemeral:true
+
+});
 
 }
 
