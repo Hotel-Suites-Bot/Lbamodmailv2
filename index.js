@@ -1,29 +1,59 @@
-require('dotenv').config();
-const {Client,GatewayIntentBits,Partials,Collection}=require('discord.js');
+require("dotenv").config();
 
-const fs=require('fs');
+const {
+    Client,
+    GatewayIntentBits,
+    Partials,
+    Collection
+} = require("discord.js");
 
-const client=new Client({
- intents:[
-  GatewayIntentBits.Guilds,
-  GatewayIntentBits.GuildMessages,
-  GatewayIntentBits.MessageContent,
-  GatewayIntentBits.DirectMessages
- ],
- partials:[Partials.Channel]
+const fs = require("fs");
+
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.DirectMessages
+    ],
+    partials: [
+        Partials.Channel
+    ]
 });
 
-client.commands=new Collection();
+client.commands = new Collection();
 
-for(const file of fs.readdirSync('./commands')){
- const c=require(`./commands/${file}`);
- client.commands.set(c.data.name,c);
+console.log("Loading commands...");
+
+for (const file of fs.readdirSync("./commands")) {
+
+    if (!file.endsWith(".js")) continue;
+
+    const command = require(`./commands/${file}`);
+
+    if (!command.data || !command.execute) {
+        console.log(`[SKIPPED] ${file}`);
+        continue;
+    }
+
+    client.commands.set(
+        command.data.name,
+        command
+    );
+
+    console.log(
+        `[LOADED] ${command.data.name}`
+    );
 }
 
-for(const file of fs.readdirSync('./events')){
- require(`./events/${file}`)(client);
-}
+console.log("Loading events...");
 
-console.log('Local database ready');
+for (const file of fs.readdirSync("./events")) {
+
+    if (!file.endsWith(".js")) continue;
+
+    require(`./events/${file}`)(client);
+
+}
 
 client.login(process.env.TOKEN);
