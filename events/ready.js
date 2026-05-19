@@ -1,6 +1,8 @@
 module.exports=(client)=>{
 
-client.once("ready",()=>{
+client.on(
+"clientReady",
+()=>{
 
 console.log(
 `${client.user.tag} online`
