@@ -1,59 +1,73 @@
 require("dotenv").config();
 
 const {
-    Client,
-    GatewayIntentBits,
-    Partials,
-    Collection
-} = require("discord.js");
+Client,
+GatewayIntentBits,
+Partials,
+Collection
+}=require("discord.js");
 
-const fs = require("fs");
+const fs=require("fs");
 
-const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.DirectMessages
-    ],
-    partials: [
-        Partials.Channel
-    ]
+const client=new Client({
+
+intents:[
+GatewayIntentBits.Guilds,
+GatewayIntentBits.GuildMessages,
+GatewayIntentBits.MessageContent,
+GatewayIntentBits.DirectMessages
+],
+
+partials:[
+Partials.Channel
+]
+
 });
 
-client.commands = new Collection();
+client.commands=new Collection();
 
-console.log("Loading commands...");
+for(const file of fs.readdirSync("./commands")){
 
-for (const file of fs.readdirSync("./commands")) {
+if(!file.endsWith(".js"))
+continue;
 
-    if (!file.endsWith(".js")) continue;
+const cmd=require(`./commands/${file}`);
 
-    const command = require(`./commands/${file}`);
+if(
+!cmd.name ||
+!cmd.execute
+){
 
-    if (!command.data || !command.execute) {
-        console.log(`[SKIPPED] ${file}`);
-        continue;
-    }
+console.log(
+`[SKIPPED] ${file}`
+);
 
-    client.commands.set(
-        command.data.name,
-        command
-    );
-
-    console.log(
-        `[LOADED] ${command.data.name}`
-    );
-}
-
-console.log("Loading events...");
-
-for (const file of fs.readdirSync("./events")) {
-
-    if (!file.endsWith(".js")) continue;
-
-    require(`./events/${file}`)(client);
+continue;
 
 }
 
-client.login(process.env.TOKEN);
+client.commands.set(
+cmd.name,
+cmd
+);
+
+console.log(
+`[LOADED] ${cmd.name}`
+);
+
+}
+
+for(const file of fs.readdirSync("./events")){
+
+if(!file.endsWith(".js"))
+continue;
+
+require(
+`./events/${file}`
+)(client);
+
+}
+
+client.login(
+process.env.TOKEN
+);
