@@ -1,7 +1,12 @@
-const { QuickDB } = require("quick.db");
+const { QuickDB }=
+require("quick.db");
 
-const db = new QuickDB({
-    filePath: "database.sqlite"
+const db=
+new QuickDB({
+
+filePath:
+"database.sqlite"
+
 });
 
-module.exports = db;
+module.exports=db;
