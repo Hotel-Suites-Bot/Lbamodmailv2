@@ -1,12 +1,27 @@
-module.exports = {
-    owners: ["1062129072626479145"],
+const {
+SlashCommandBuilder
+} = require("discord.js");
 
-    embed: {
-        color: 0x2b2d31,
-        footer: "LBA Support & Moderation"
-    },
+module.exports={
 
-    ticket: {
-        format: "ticket"
-    }
+data:new SlashCommandBuilder()
+
+.setName("config")
+.setDescription(
+"Bot configuration"
+),
+
+async execute(interaction){
+
+await interaction.reply({
+
+content:
+"Config system coming next",
+
+ephemeral:true
+
+});
+
+}
+
 };
