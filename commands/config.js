@@ -3,28 +3,19 @@ EmbedBuilder,
 ActionRowBuilder,
 ButtonBuilder,
 ButtonStyle
-}=require(
-"discord.js"
-);
+}=require("discord.js");
 
-const db=
-require(
-"../database/db"
-);
+const db=require("../database/db");
 
 module.exports={
 
 name:"config",
 
-async execute(
-message
-){
+async execute(message){
 
 if(
-!message.member.permissions.has(
-"Administrator"
-)
-)return;
+!message.member.permissions.has("Administrator")
+) return;
 
 const categories=
 await db.get(
@@ -34,119 +25,55 @@ await db.get(
 const logs=
 await db.get(
 `logs_${message.guild.id}`
-);
+)||"Not Set";
 
 const transcripts=
 await db.get(
 `transcripts_${message.guild.id}`
-);
-
-const counter=
-await db.get(
-`counter_${message.guild.id}`
-)||0;
+)||"Not Set";
 
 const embed=
 new EmbedBuilder()
-
 .setTitle(
-"LBA Ticket Config"
+"British Army Modmail Config"
 )
-
 .setDescription(
+`Categories: ${categories.length}
 
-`Tickets:
-${counter}
+Logs: ${logs}
 
-Categories:
-${categories.length}
-
-Logs:
-${logs ?
-"Configured"
-:
-"Not Configured"}
-
-Transcripts:
-${transcripts ?
-"Configured"
-:
-"Not Configured"}`
-)
-
-.setColor(
-0x2b2d31
+Transcripts: ${transcripts}`
 );
 
 const row=
 new ActionRowBuilder()
-
 .addComponents(
 
 new ButtonBuilder()
-
-.setCustomId(
-"cfg_categories"
-)
-
-.setLabel(
-"📁 Categories"
-)
-
-.setStyle(
-ButtonStyle.Primary
-),
+.setCustomId("cfg_addcat")
+.setLabel("Add Category")
+.setStyle(ButtonStyle.Success),
 
 new ButtonBuilder()
-
-.setCustomId(
-"cfg_roles"
-)
-
-.setLabel(
-"👥 Support Roles"
-)
-
-.setStyle(
-ButtonStyle.Success
-),
+.setCustomId("cfg_removecat")
+.setLabel("Remove Category")
+.setStyle(ButtonStyle.Danger),
 
 new ButtonBuilder()
-
-.setCustomId(
-"cfg_channels"
-)
-
-.setLabel(
-"📢 Channels"
-)
-
-.setStyle(
-ButtonStyle.Secondary
-),
+.setCustomId("cfg_setlogs")
+.setLabel("Set Logs")
+.setStyle(ButtonStyle.Primary),
 
 new ButtonBuilder()
-
-.setCustomId(
-"cfg_settings"
-)
-
-.setLabel(
-"⚙ Ticket Settings"
-)
-
-.setStyle(
-ButtonStyle.Danger
-)
+.setCustomId("cfg_settranscripts")
+.setLabel("Set Transcripts")
+.setStyle(ButtonStyle.Secondary)
 
 );
 
-message.channel.send({
-
+await message.channel.send({
 embeds:[embed],
-
 components:[row]
-
 });
 
 }
