@@ -1,73 +1,41 @@
-require("dotenv").config();
+require('dotenv').config();
+
+const fs = require('fs');
+const mongoose = require('mongoose');
 
 const {
-Client,
-GatewayIntentBits,
-Partials,
-Collection
-}=require("discord.js");
+    Client,
+    GatewayIntentBits,
+    Partials,
+    Collection
+} = require('discord.js');
 
-const fs=require("fs");
-
-const client=new Client({
-
-intents:[
-GatewayIntentBits.Guilds,
-GatewayIntentBits.GuildMessages,
-GatewayIntentBits.MessageContent,
-GatewayIntentBits.DirectMessages
-],
-
-partials:[
-Partials.Channel
-]
-
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMembers
+    ],
+    partials: [Partials.Channel]
 });
 
-client.commands=new Collection();
+client.commands = new Collection();
 
-for(const file of fs.readdirSync("./commands")){
-
-if(!file.endsWith(".js"))
-continue;
-
-const cmd=require(`./commands/${file}`);
-
-if(
-!cmd.name ||
-!cmd.execute
-){
-
-console.log(
-`[SKIPPED] ${file}`
-);
-
-continue;
-
+// load commands
+for (const file of fs.readdirSync('./commands').filter(f => f.endsWith('.js'))) {
+    const cmd = require(`./commands/${file}`);
+    client.commands.set(cmd.name, cmd);
 }
 
-client.commands.set(
-cmd.name,
-cmd
-);
-
-console.log(
-`[LOADED] ${cmd.name}`
-);
-
+// load events
+for (const file of fs.readdirSync('./events').filter(f => f.endsWith('.js'))) {
+    require(`./events/${file}`)(client);
 }
 
-for(const file of fs.readdirSync("./events")){
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log('MongoDB Connected'))
+.catch(console.error);
 
-if(!file.endsWith(".js"))
-continue;
-
-require(
-`./events/${file}`
-)(client);
-
-}
-
-client.login(
-process.env.TOKEN
-);
+client.login(process.env.TOKEN);
